@@ -1,0 +1,14 @@
+parts:
+  - id: part1
+    heading: プログラム第1部
+    meta: TeX/LaTeXのモダンな基礎を知ろう（チュートリアル、各40分程度）
+    talks:
+      - talk-01
+      - talk-02
+      - talk-03
+  - id: part2
+    heading: プログラム第2部
+    meta: TeXをもっと極めよう（研究発表、各20〜30分）
+    talks:
+      - talk-04
+      - talk-05

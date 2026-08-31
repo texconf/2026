@@ -1,0 +1,17 @@
+{
+  "name": "texconf-2026-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsx build.ts",
+    "build:hub": "tsx build.ts --hub"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "yaml": "^2.7.0"
+  }
+}
