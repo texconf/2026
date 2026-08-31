@@ -61,8 +61,11 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
 
 **Pages を有効にする手順（各リポジトリ）**
 
-1. Settings → Pages → **Source: GitHub Actions**
-2. Team 以上なら visibility を Private / Public から選択
+1. Settings → Pages → **Deploy from a branch**
+2. Branch: **`gh-pages`** / `/ (root)`
+3. Team 以上なら visibility を Private / Public から選択
+
+`pages.yml` は `main` への push のたびに `gh-pages` ブランチへ公開用ファイルを書き出します。
 
 **sync-hub.yml の設定**
 
