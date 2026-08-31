@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "tsx build.ts",
-    "build:hub": "tsx build.ts --hub"
+    "build:hub": "tsx build.ts --hub",
+    "check": "npm run build && git diff --exit-code index.html"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",

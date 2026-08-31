@@ -49,6 +49,31 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
 
 `index.src.html` は固定部分のテンプレートです。プログラム欄はビルドで差し替わります。
 
+## CI / GitHub Pages
+
+### 2026 リポジトリ
+
+| Workflow | 内容 |
+|---|---|
+| `ci.yml` | `npm run check` でビルドし、`index.html` がコミット済みか検証 |
+| `pages.yml` | ビルド後に GitHub Pages へデプロイ |
+| `sync-hub.yml` | 講演データ変更時、入口リポジトリの講演プレビューを更新 |
+
+**Pages を有効にする手順（各リポジトリ）**
+
+1. Settings → Pages → **Source: GitHub Actions**
+2. Team 以上なら visibility を Private / Public から選択
+
+**sync-hub.yml の設定**
+
+`2026` リポジトリの Secrets に `TEXCONF_REPO_TOKEN` を登録する。`texconf.github.io` への write 権限付き fine-grained PAT または classic PAT。
+
+### texconf.github.io リポジトリ
+
+| Workflow | 内容 |
+|---|---|
+| `pages.yml` | 静的ファイルを GitHub Pages へデプロイ |
+
 ## ディレクトリ構成
 
 ```

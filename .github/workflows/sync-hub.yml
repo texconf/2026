@@ -1,0 +1,44 @@
+name: Sync hub preview
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - talks/**
+      - program.yaml
+      - build.ts
+      - index.src.html
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: texconf/texconf.github.io
+          path: texconf.github.io
+          token: ${{ secrets.TEXCONF_REPO_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build:hub
+
+      - name: Commit hub preview if changed
+        working-directory: texconf.github.io
+        run: |
+          if git diff --quiet index.html; then
+            echo "No hub preview changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Update talk preview from texconf/2026"
+          git push
