@@ -6,7 +6,7 @@
 
 ## 講演内容の更新
 
-講演タイトル、登壇者名、概要はMarkdownで管理します。pushでは`ci.yml`がビルドを検証し、`pages.yml`が`gh-pages`へデプロイします。ローカル確認用に`npm run build`も使えます。
+講演タイトル、登壇者名、概要はMarkdownで管理します。pushでは`ci.yml`がビルドを検証するだけです。ローカル確認用に`npm run build`も使えます。
 
 ### 1. 講演Markdownを置く
 
@@ -45,7 +45,7 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
 ```
 
 - 入力: `index.src.html`, `talks/*.md`, `program.yaml`
-- 出力: `index.html`（ローカル確認用。公開はCIがビルドして`gh-pages`へ載せる）
+- 出力: `index.html`（ローカル確認用。公開は`pages.yml`を手動実行して`gh-pages`へ載せる）
 
 `index.src.html`は固定部分のテンプレートです。プログラム欄はビルドで差し替わります。
 
@@ -55,8 +55,8 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
 
 | Workflow | 内容 |
 |---|---|
-| `ci.yml` | `npm run build`でMarkdownからHTMLが生成できるか検証 |
-| `pages.yml` | ビルド後に`gh-pages`へデプロイ（privateでも可。`configure-pages`は使わない） |
+| `ci.yml` | push/PRで`npm run build`（ビルドが通るかだけ検証） |
+| `pages.yml` | 手動実行で`gh-pages`へデプロイ（CIとは別） |
 | `sync-hub.yml` | 講演データ変更時、入口リポジトリの講演プレビューを更新 |
 
 **Pagesを有効にする手順（各リポジトリ）**
@@ -65,7 +65,7 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
 2. Branch: **`gh-pages`** / `/ (root)`
 3. Team以上ならvisibilityをPrivate / Publicから選択
 
-`pages.yml`は`main`へのpushのたびに`gh-pages`ブランチへ公開用ファイルを書き出します。
+`pages.yml`はActionsタブから手動実行し、`gh-pages`ブランチへ公開用ファイルを書き出します。
 
 **sync-hub.ymlの設定**
 
