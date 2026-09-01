@@ -6,7 +6,7 @@
 
 ## 講演内容の更新
 
-講演タイトル、登壇者名、概要は Markdown で管理します。編集後にビルドを実行すると `index.html` に反映されます。
+講演タイトル、登壇者名、概要は Markdown で管理します。`pages.yml` が push のたびにビルドして公開します。ローカル確認用に `npm run build` も使えます。
 
 ### 1. 講演 Markdown を置く
 
@@ -45,7 +45,7 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
 ```
 
 - 入力: `index.src.html`, `talks/*.md`, `program.yaml`
-- 出力: `index.html`（GitHub Pages で公開するファイル）
+- 出力: `index.html`（ローカル確認用。公開は CI がビルドして `gh-pages` へ載せる）
 
 `index.src.html` は固定部分のテンプレートです。プログラム欄はビルドで差し替わります。
 
@@ -55,7 +55,7 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
 
 | Workflow | 内容 |
 |---|---|
-| `ci.yml` | `npm run check` でビルドし、`index.html` がコミット済みか検証 |
+| `ci.yml` | `npm run build` で Markdown から HTML が生成できるか検証 |
 | `pages.yml` | ビルド後に GitHub Pages へデプロイ |
 | `sync-hub.yml` | 講演データ変更時、入口リポジトリの講演プレビューを更新 |
 
