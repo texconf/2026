@@ -58,9 +58,11 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
 | Workflow | 内容 |
 |---|---|
 | `ci.yml` | push/PRで`npm run build`（ビルドが通るかだけ検証） |
-| `pages.yml` | pushでビルド後にGitHub Pagesへデプロイ |
+| `pages.yml` | pushでビルド後に`gh-pages`ブランチへデプロイ |
 
-`pages.yml`は`main`へのpushのたびに公開サイトを更新します。
+初回のみ、Settings → Pages → **Deploy from a branch** → **`gh-pages`** / root を選ぶ。
+
+`pages.yml`は`main`へのpushのたびに`gh-pages`ブランチを更新します。
 
 ### texconf.github.ioリポジトリ
 
