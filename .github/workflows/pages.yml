@@ -6,7 +6,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 concurrency:
   group: pages
@@ -15,8 +17,9 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -28,14 +31,19 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
       - name: Prepare site
         run: |
           mkdir site
           cp index.html style.css favicon.svg .nojekyll site/
           cp -r materials site/
 
-      - uses: peaceiris/actions-gh-pages@v4
+      - uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
-          force_orphan: true
+          path: site
+
+      - uses: actions/deploy-pages@v4
+        id: deployment
