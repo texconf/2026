@@ -418,6 +418,15 @@ section > h2 {
   margin-top: 0.75rem;
 }
 
+.intro p,
+.overview,
+.content-block p,
+.talk-abstract p {
+  text-align: justify;
+  text-justify: inter-ideograph;
+  text-align-last: left;
+}
+
 .intro {
   margin-top: 1.25rem;
 }
