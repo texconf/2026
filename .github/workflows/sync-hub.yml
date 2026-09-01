@@ -2,13 +2,6 @@ name: Sync hub preview
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - talks/**
-      - program.yaml
-      - build.ts
-      - index.src.html
 
 jobs:
   sync:
@@ -30,6 +23,8 @@ jobs:
 
       - run: npm ci
       - run: npm run build:hub
+        env:
+          TEXCONF_HUB_ROOT: ${{ github.workspace }}/texconf.github.io
 
       - name: Commit hub preview if changed
         working-directory: texconf.github.io

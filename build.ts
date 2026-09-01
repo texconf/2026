@@ -7,13 +7,16 @@ import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
+const HUB_ROOT = process.env.TEXCONF_HUB_ROOT
+  ? resolve(process.env.TEXCONF_HUB_ROOT)
+  : join(ROOT, "..", "texconf.github.io");
 const TALKS_DIR = join(ROOT, "talks");
 const MATERIALS_DIR = join(ROOT, "materials");
 const PROGRAM_FILE = join(ROOT, "program.yaml");
 const INDEX_SRC = join(ROOT, "index.src.html");
 const INDEX_OUT = join(ROOT, "index.html");
-const HUB_INDEX_SRC = join(ROOT, "..", "texconf.github.io", "index.src.html");
-const HUB_INDEX_OUT = join(ROOT, "..", "texconf.github.io", "index.html");
+const HUB_INDEX_SRC = join(HUB_ROOT, "index.src.html");
+const HUB_INDEX_OUT = join(HUB_ROOT, "index.html");
 
 const MATERIAL_EXTENSIONS = [".pdf", ".pptx", ".zip", ".html", ".odp"] as const;
 
