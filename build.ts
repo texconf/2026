@@ -1,5 +1,5 @@
 #!/usr/bin/env -S npx tsx
-/** TeXConf 年次ページを Markdown ソースから生成する。 */
+/** TeXConf年次ページをMarkdownソースから生成する。 */
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -51,7 +51,7 @@ function loadProgram(): ProgramPart[] {
     parts?: ProgramPart[];
   };
   if (!data?.parts) {
-    throw new Error(`${PROGRAM_FILE} に parts が必要です。`);
+    throw new Error(`${PROGRAM_FILE}にpartsが必要です。`);
   }
   return data.parts;
 }
@@ -67,7 +67,7 @@ function parseFrontmatter(text: string): [Record<string, string>, string] {
   const meta = parseYaml(match[1]) as Record<string, unknown> | null;
   const body = match[2].trim();
   if (!meta || typeof meta !== "object" || Array.isArray(meta)) {
-    throw new Error("front matter は YAML のマッピングである必要があります。");
+    throw new Error("front matterはYAMLのマッピングである必要があります。");
   }
   const normalized: Record<string, string> = {};
   for (const [key, value] of Object.entries(meta)) {
@@ -137,14 +137,14 @@ function findMaterials(talkId: string): string | null {
 function loadTalk(talkId: string): Talk {
   const mdPath = join(TALKS_DIR, `${talkId}.md`);
   if (!existsSync(mdPath)) {
-    throw new Error(`講演 Markdown が見つかりません: ${mdPath}`);
+    throw new Error(`講演Markdownが見つかりません: ${mdPath}`);
   }
 
   const [meta, body] = parseFrontmatter(readFileSync(mdPath, "utf8"));
   const title = (meta.title ?? "").trim();
   const speaker = (meta.speaker ?? "").trim();
   if (!title || !speaker) {
-    throw new Error(`${mdPath} の front matter に title と speaker が必要です。`);
+    throw new Error(`${mdPath}のfront matterにtitleとspeakerが必要です。`);
   }
 
   return {

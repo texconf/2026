@@ -1,16 +1,16 @@
 # TeXConf 2026
 
-2026年開催の公式ページと、開催後の発表資料の置き場です。公開 URL は <https://texconf.github.io/2026/> です。
+2026年開催の公式ページと、開催後の発表資料の置き場です。公開URLは <https://texconf.github.io/2026/> です。
 
 恒常の入口は [`texconf.github.io`](https://github.com/texconf/texconf.github.io) です。
 
 ## 講演内容の更新
 
-講演タイトル、登壇者名、概要は Markdown で管理します。`pages.yml` が push のたびにビルドして公開します。ローカル確認用に `npm run build` も使えます。
+講演タイトル、登壇者名、概要はMarkdownで管理します。`pages.yml`がpushのたびにビルドして公開します。ローカル確認用に`npm run build`も使えます。
 
-### 1. 講演 Markdown を置く
+### 1. 講演Markdownを置く
 
-`talks/` に、講演 ID と同じファイル名の Markdown を置きます。ファイル名は講演内容に依存させず、`talk-01` のように通し番号にします。並びと部の割り当ては `program.yaml` で定義します。
+`talks/`に、講演IDと同じファイル名のMarkdownを置きます。ファイル名は講演内容に依存させず、`talk-01`のように通し番号にします。並びと部の割り当ては`program.yaml`で定義します。
 
 例: `talks/talk-02.md`
 
@@ -20,17 +20,17 @@ title: LuaTeX-ja（再）入門
 speaker: 北川弘典
 ---
 
-概要本文を Markdown で書きます。段落は空行で区切ります。
+概要本文をMarkdownで書きます。段落は空行で区切ります。
 
 - 箇条書きも使えます
 - **太字** や [リンク](https://example.com/) も使えます
 ```
 
-front matter の `title` が講演タイトル、`speaker` が登壇者名です。`---` の下が講演概要です。
+front matterの`title`が講演タイトル、`speaker`が登壇者名です。`---`の下が講演概要です。
 
 ### 2. 発表資料を置く（任意）
 
-`materials/` に `<講演ID>.<拡張子>` という名前でファイルを置くと、概要欄に「発表資料」リンクが自動で付きます。
+`materials/`に`<講演ID>.<拡張子>`という名前でファイルを置くと、概要欄に「発表資料」リンクが自動で付きます。
 
 対応拡張子: `.pdf`, `.pptx`, `.zip`, `.html`, `.odp`
 
@@ -40,42 +40,42 @@ front matter の `title` が講演タイトル、`speaker` が登壇者名です
 
 ```bash
 npm install                       # 初回のみ
-npm run build                     # 2026 年ページを生成
+npm run build                     # 2026年ページを生成
 npm run build:hub                 # 上に加え入口ページの講演一覧も更新
 ```
 
 - 入力: `index.src.html`, `talks/*.md`, `program.yaml`
-- 出力: `index.html`（ローカル確認用。公開は CI がビルドして `gh-pages` へ載せる）
+- 出力: `index.html`（ローカル確認用。公開はCIがビルドして`gh-pages`へ載せる）
 
-`index.src.html` は固定部分のテンプレートです。プログラム欄はビルドで差し替わります。
+`index.src.html`は固定部分のテンプレートです。プログラム欄はビルドで差し替わります。
 
 ## CI / GitHub Pages
 
-### 2026 リポジトリ
+### 2026リポジトリ
 
 | Workflow | 内容 |
 |---|---|
-| `ci.yml` | `npm run build` で Markdown から HTML が生成できるか検証 |
-| `pages.yml` | ビルド後に GitHub Pages へデプロイ |
+| `ci.yml` | `npm run build`でMarkdownからHTMLが生成できるか検証 |
+| `pages.yml` | ビルド後にGitHub Pagesへデプロイ |
 | `sync-hub.yml` | 講演データ変更時、入口リポジトリの講演プレビューを更新 |
 
-**Pages を有効にする手順（各リポジトリ）**
+**Pagesを有効にする手順（各リポジトリ）**
 
 1. Settings → Pages → **Deploy from a branch**
 2. Branch: **`gh-pages`** / `/ (root)`
-3. Team 以上なら visibility を Private / Public から選択
+3. Team以上ならvisibilityをPrivate / Publicから選択
 
-`pages.yml` は `main` への push のたびに `gh-pages` ブランチへ公開用ファイルを書き出します。
+`pages.yml`は`main`へのpushのたびに`gh-pages`ブランチへ公開用ファイルを書き出します。
 
-**sync-hub.yml の設定**
+**sync-hub.ymlの設定**
 
-`2026` リポジトリの Secrets に `TEXCONF_REPO_TOKEN` を登録する。`texconf.github.io` への write 権限付き fine-grained PAT または classic PAT。
+`2026`リポジトリのSecretsに`TEXCONF_REPO_TOKEN`を登録する。`texconf.github.io`へのwrite権限付きfine-grained PATまたはclassic PAT。
 
-### texconf.github.io リポジトリ
+### texconf.github.ioリポジトリ
 
 | Workflow | 内容 |
 |---|---|
-| `pages.yml` | 静的ファイルを GitHub Pages へデプロイ |
+| `pages.yml` | 静的ファイルをGitHub Pagesへデプロイ |
 
 ## ディレクトリ構成
 
@@ -83,11 +83,11 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
 2026/
   build.ts
   package.json
-  program.yaml          # プログラム第1部・第2部と講演 ID の並び
+  program.yaml          # プログラム第1部と第2部、講演IDの並び
   index.src.html        # ページテンプレート（編集可）
-  index.html            # 生成物（build.ts の出力）
+  index.html            # 生成物（build.tsの出力）
   talks/
-    talk-01.md          # 講演ごとの Markdown（ID は内容に依存しない）
+    talk-01.md          # 講演ごとのMarkdown（IDは内容に依存しない）
   materials/
     talk-01.pdf         # 発表資料（任意）
   style.css
