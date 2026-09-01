@@ -45,9 +45,11 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
 ```
 
 - 入力: `index.src.html`, `talks/*.md`, `program.yaml`
-- 出力: `index.html`（ローカル確認用。公開は`pages.yml`を手動実行して`gh-pages`へ載せる）
+- 出力: `index.html`（ローカル確認用。公開は`pages.yml`がpush時にデプロイする）
 
 `index.src.html`は固定部分のテンプレートです。プログラム欄はビルドで差し替わります。
+
+入口ページの講演一覧を更新するときは`npm run build:hub`を実行し、生成された`texconf.github.io/index.html`をhubリポジトリへコミットします。
 
 ## CI / GitHub Pages
 
@@ -56,20 +58,9 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
 | Workflow | 内容 |
 |---|---|
 | `ci.yml` | push/PRで`npm run build`（ビルドが通るかだけ検証） |
-| `pages.yml` | 手動実行で`gh-pages`へデプロイ（CIとは別） |
-| `sync-hub.yml` | 講演データ変更時、入口リポジトリの講演プレビューを更新 |
+| `pages.yml` | pushでビルド後にGitHub Pagesへデプロイ |
 
-**Pagesを有効にする手順（各リポジトリ）**
-
-1. Settings → Pages → **Deploy from a branch**
-2. Branch: **`gh-pages`** / `/ (root)`
-3. Team以上ならvisibilityをPrivate / Publicから選択
-
-`pages.yml`はActionsタブから手動実行し、`gh-pages`ブランチへ公開用ファイルを書き出します。
-
-**sync-hub.ymlの設定**
-
-`2026`リポジトリのSecretsに`TEXCONF_REPO_TOKEN`を登録する。`texconf.github.io`へのwrite権限付きfine-grained PATまたはclassic PAT。
+`pages.yml`は`main`へのpushのたびに公開サイトを更新します。
 
 ### texconf.github.ioリポジトリ
 
