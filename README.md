@@ -6,7 +6,7 @@
 
 ## 講演内容の更新
 
-講演タイトル、登壇者名、概要はMarkdownで管理します。pushでは`ci.yml`がビルドを検証するだけです。ローカル確認用に`npm run build`も使えます。
+講演タイトル、登壇者名、概要はMarkdownで管理します。`main`へpushすると`pages.yml`がビルドして公開します。ローカル確認用に`npm run build`も使えます。
 
 ### 1. 講演Markdownを置く
 
@@ -51,22 +51,12 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
 
 入口ページの講演一覧を更新するときは`npm run build:hub`を実行し、生成された`texconf.github.io/index.html`をhubリポジトリへコミットします。
 
-## CI / GitHub Pages
+## GitHub Pages
 
-### 2026リポジトリ
-
-| Workflow | 内容 |
-|---|---|
-| `ci.yml` | push/PRで`npm run build`（ビルドが通るかだけ検証） |
-| `pages.yml` | 手動実行で`gh-pages`へデプロイ（CIとは別） |
-
-`pages.yml`はActionsタブから手動実行し、`gh-pages`ブランチを更新します。
-
-### texconf.github.ioリポジトリ
-
-| Workflow | 内容 |
-|---|---|
-| `pages.yml` | 静的ファイルをGitHub Pagesへデプロイ |
+| リポジトリ | Workflow | 内容 |
+|---|---|---|
+| 2026 | `pages.yml` | `main`へpushでビルドし`gh-pages`へデプロイ |
+| texconf.github.io | `pages.yml` | `main`へpushでGitHub Pagesへデプロイ |
 
 ## ディレクトリ構成
 
