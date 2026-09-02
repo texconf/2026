@@ -15,7 +15,6 @@
   --radius: 0.75rem;
   --shadow: 0 1px 3px rgb(15 23 42 / 0.06), 0 8px 24px rgb(15 23 42 / 0.04);
 }
-/* U+FA4F 侑 — default Noto Sans JP subset omits CJK compatibility ideographs */
 @font-face {
   font-family: "Noto Sans JP";
   font-style: normal;
