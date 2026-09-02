@@ -15,6 +15,34 @@
   --radius: 0.75rem;
   --shadow: 0 1px 3px rgb(15 23 42 / 0.06), 0 8px 24px rgb(15 23 42 / 0.04);
 }
+/* U+FA4F 侑 — default Noto Sans JP subset omits CJK compatibility ideographs */
+@font-face {
+  font-family: "Noto Sans JP";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+FA4F;
+  src: url("https://fonts.gstatic.com/l/font?kit=-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEj75vA0FOaKC8-7g&skey=72472b0eb8793570&v=v56") format("truetype");
+}
+
+@font-face {
+  font-family: "Noto Sans JP";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  unicode-range: U+FA4F;
+  src: url("https://fonts.gstatic.com/l/font?kit=-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFCMj75vA0FOaKC8-7g&skey=72472b0eb8793570&v=v56") format("truetype");
+}
+
+@font-face {
+  font-family: "Noto Sans JP";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+FA4F;
+  src: url("https://fonts.gstatic.com/l/font?kit=-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFPYk75vA0FOaKC8-7g&skey=72472b0eb8793570&v=v56") format("truetype");
+}
+
 
 *,
 *::before,
