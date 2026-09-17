@@ -13,6 +13,7 @@ const HUB_ROOT = process.env.TEXCONF_HUB_ROOT
 const TALKS_DIR = join(ROOT, "talks");
 const MATERIALS_DIR = join(ROOT, "materials");
 const PROGRAM_FILE = join(ROOT, "program.yaml");
+const REGISTRATION_FILE = join(ROOT, "registration.yaml");
 const INDEX_SRC = join(ROOT, "index.src.html");
 const INDEX_OUT = join(ROOT, "index.html");
 const HUB_INDEX_SRC = join(HUB_ROOT, "index.src.html");
@@ -40,6 +41,28 @@ interface Talk {
   materialsHref: string | null;
 }
 
+type RegistrationStatus = "open" | "nearly_full" | "sold_out" | "closed";
+
+interface Registration {
+  capacity: number;
+  status: RegistrationStatus;
+  peatixUrl: string;
+}
+
+const REGISTRATION_STATUSES: RegistrationStatus[] = [
+  "open",
+  "nearly_full",
+  "sold_out",
+  "closed",
+];
+
+const EVENT_STATUS_LABELS: Record<RegistrationStatus, string> = {
+  open: "参加者募集中",
+  nearly_full: "残りわずか",
+  sold_out: "満席",
+  closed: "募集終了",
+};
+
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
@@ -47,6 +70,100 @@ function escapeHtml(text: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function loadRegistration(): Registration {
+  const data = parseYaml(readFileSync(REGISTRATION_FILE, "utf8")) as {
+    capacity?: number;
+    status?: string;
+    peatix_url?: string;
+  };
+
+  const capacity = data.capacity;
+  if (typeof capacity !== "number" || capacity <= 0) {
+    throw new Error(`${REGISTRATION_FILE}に正のcapacityが必要です。`);
+  }
+
+  const status = data.status;
+  if (!status || !REGISTRATION_STATUSES.includes(status as RegistrationStatus)) {
+    throw new Error(
+      `${REGISTRATION_FILE}のstatusは ${REGISTRATION_STATUSES.join(" | ")} のいずれかである必要があります。`,
+    );
+  }
+
+  const peatixUrl = (data.peatix_url ?? "").trim();
+  if (!peatixUrl) {
+    throw new Error(`${REGISTRATION_FILE}にpeatix_urlが必要です。`);
+  }
+
+  return {
+    capacity,
+    status: status as RegistrationStatus,
+    peatixUrl,
+  };
+}
+
+function registrationCapacityText(registration: Registration): string {
+  const base = `定員${registration.capacity}名`;
+  if (registration.status === "nearly_full") {
+    return `${base}（残りわずか）`;
+  }
+  if (registration.status === "sold_out") {
+    return `${base}（満席）`;
+  }
+  return base;
+}
+
+function registrationMetaDescription(registration: Registration): string {
+  const venue =
+    "TeXConf 2026は2026年11月21日（土）13:30〜17:30、ちよだプラットフォームスクウェアで開催します。";
+  const capacity = `定員${registration.capacity}名。`;
+
+  switch (registration.status) {
+    case "open":
+      return `${venue}${capacity}Peatixで参加登録受付中。`;
+    case "nearly_full":
+      return `${venue}${capacity}Peatixで参加登録受付中（残りわずか）。`;
+    case "sold_out":
+      return `${venue}${capacity}満席のため募集を終了しました。`;
+    case "closed":
+      return `${venue}${capacity}募集を終了しました。`;
+  }
+}
+
+function renderRegistration(registration: Registration): string {
+  const sub = registrationCapacityText(registration);
+  const closed = registration.status === "sold_out" || registration.status === "closed";
+  const bannerClass = closed ? "reg-banner reg-banner-closed" : "reg-banner";
+  const peatixLink = `<a href="${escapeHtml(registration.peatixUrl)}">Peatix</a>`;
+
+  let main: string;
+  if (registration.status === "open" || registration.status === "nearly_full") {
+    main = `${peatixLink}でお申し込みください（学生の方もPeatixでの登録が必要です）`;
+  } else if (registration.status === "sold_out") {
+    main = "定員に達したため、募集を終了しました";
+  } else {
+    main = "募集を終了しました";
+  }
+
+  return `      <aside class="${bannerClass}" aria-labelledby="reg-banner-heading">
+        <span class="reg-banner-label">参加登録</span>
+        <div>
+          <p class="reg-banner-main" id="reg-banner-heading">${main}</p>
+          <p class="reg-banner-sub">${escapeHtml(sub)}</p>
+        </div>
+      </aside>`;
+}
+
+function renderEventStatus(registration: Registration): string {
+  const label = EVENT_STATUS_LABELS[registration.status];
+  const modifier =
+    registration.status === "sold_out" || registration.status === "closed"
+      ? " event-status-closed"
+      : registration.status === "nearly_full"
+        ? " event-status-limited"
+        : "";
+  return `<span class="event-status${modifier}">${escapeHtml(label)}</span>`;
 }
 
 function loadProgram(): ProgramPart[] {
@@ -226,11 +343,51 @@ function replaceMarkerBlock(
   return updated;
 }
 
+function replaceMarkerInline(
+  source: string,
+  start: string,
+  end: string,
+  content: string,
+): string {
+  const pattern = new RegExp(
+    `${start.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[\\s\\S]*?${end.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`,
+  );
+  const updated = source.replace(pattern, content);
+  if (updated === source) {
+    throw new Error(`マーカー ${start} / ${end} が見つかりません。`);
+  }
+  return updated;
+}
+
+function applyRegistration(source: string, registration: Registration): string {
+  const metaDescription = registrationMetaDescription(registration);
+  let updated = replaceMarkerBlock(
+    source,
+    "<!-- build:registration:start -->",
+    "<!-- build:registration:end -->",
+    renderRegistration(registration),
+  );
+  updated = replaceMarkerBlock(
+    updated,
+    "<!-- build:meta-description:start -->",
+    "<!-- build:meta-description:end -->",
+    `  <meta name="description" content="${escapeHtml(metaDescription)}">`,
+  );
+  updated = replaceMarkerBlock(
+    updated,
+    "<!-- build:og-description:start -->",
+    "<!-- build:og-description:end -->",
+    `  <meta property="og:description" content="${escapeHtml(metaDescription)}">`,
+  );
+  return updated;
+}
+
 function buildIndex(
   src: string,
   dest: string,
   parts: ProgramPart[],
-  options: { program: boolean; preview: boolean },
+  registration: Registration,
+  options: { program: boolean; preview: boolean; registration: boolean },
 ): void {
   let source = readFileSync(src, "utf8");
   if (options.program) {
@@ -249,14 +406,29 @@ function buildIndex(
       renderTalkPreview(parts),
     );
   }
+  if (options.registration) {
+    source = applyRegistration(source, registration);
+  } else {
+    source = replaceMarkerInline(
+      source,
+      "<!-- build:event-status:start -->",
+      "<!-- build:event-status:end -->",
+      renderEventStatus(registration),
+    );
+  }
   writeFileSync(dest, source, "utf8");
 }
 
 function main(): void {
   const hub = process.argv.includes("--hub");
   const parts = loadProgram();
+  const registration = loadRegistration();
 
-  buildIndex(INDEX_SRC, INDEX_OUT, parts, { program: true, preview: false });
+  buildIndex(INDEX_SRC, INDEX_OUT, parts, registration, {
+    program: true,
+    preview: false,
+    registration: true,
+  });
   console.log(`生成: ${INDEX_OUT}`);
 
   if (hub) {
@@ -265,9 +437,10 @@ function main(): void {
         `警告: ${HUB_INDEX_SRC} がありません。入口ページは更新しません。`,
       );
     } else {
-      buildIndex(HUB_INDEX_SRC, HUB_INDEX_OUT, parts, {
+      buildIndex(HUB_INDEX_SRC, HUB_INDEX_OUT, parts, registration, {
         program: false,
         preview: true,
+        registration: false,
       });
       console.log(`生成: ${HUB_INDEX_OUT}`);
     }

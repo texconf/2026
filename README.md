@@ -4,6 +4,25 @@
 
 恒常の入口は [`texconf.github.io`](https://github.com/texconf/texconf.github.io) です。
 
+## 参加登録の状態
+
+`registration.yaml`で募集状態を管理します。Peatixと自動連携はしません。状態が変わったタイミングでこのファイルを直し、`npm run build:hub`を実行してください。
+
+```yaml
+capacity: 45
+status: open
+peatix_url: https://texconf2026.peatix.com/
+```
+
+`status`の値:
+
+| 値 | トップページ | 2026年ページ |
+|---|---|---|
+| `open` | 参加者募集中 | Peatix申し込み案内 |
+| `nearly_full` | 残りわずか | Peatix申し込み案内（残りわずか） |
+| `sold_out` | 満席 | 募集終了（満席） |
+| `closed` | 募集終了 | 募集終了 |
+
 ## 講演内容の更新
 
 講演タイトル、登壇者名、概要はMarkdownで管理します。`main`へpushすると`pages.yml`がビルドして公開します。ローカル確認用に`npm run build`も使えます。
@@ -65,6 +84,7 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
   build.ts
   package.json
   program.yaml          # プログラム第1部と第2部、講演IDの並び
+  registration.yaml     # 参加登録の状態
   index.src.html        # ページテンプレート（編集可）
   index.html            # 生成物（build.tsの出力）
   talks/

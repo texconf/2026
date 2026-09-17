@@ -193,6 +193,19 @@ a:hover {
   font-size: 0.95rem;
 }
 
+.reg-banner-closed {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.reg-banner-closed .reg-banner-label {
+  background: #64748b;
+}
+
+.reg-banner-closed .reg-banner-main {
+  color: var(--ink);
+}
+
 .event-facts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
@@ -445,6 +458,26 @@ section > h2 {
   margin-top: 0.75rem;
 }
 
+.updates {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.updates li {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.95rem;
+}
+
+.updates li:first-child {
+  padding-top: 0;
+}
+
+.updates time {
+  font-weight: 600;
+}
+
 .intro p,
 .overview,
 .content-block p,
@@ -491,19 +524,48 @@ section > h2 {
   outline-offset: 3px;
 }
 
-.featured-event h2 {
-  margin: 0 0 1rem;
+.featured-event-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.featured-event-header h2 {
+  margin: 0;
   font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: 700;
   letter-spacing: -0.03em;
 }
 
-.featured-event .reg-banner {
-  margin-top: 0;
+.event-status {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  background: var(--accent-soft);
+  border: 1px solid #99f6e4;
+  border-radius: 999px;
+  color: var(--accent-dark);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.event-status-limited {
+  background: var(--reg-bg);
+  border-color: var(--reg-border);
+  color: var(--reg-ink);
+}
+
+.event-status-closed {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #64748b;
 }
 
 .featured-event .event-facts {
-  margin-top: 1.25rem;
+  margin-top: 0;
 }
 
 .featured-event .talk-preview {
