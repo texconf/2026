@@ -87,6 +87,7 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
   registration.yaml     # 参加登録の状態
   index.src.html        # ページテンプレート（編集可）
   index.html            # 生成物（build.tsの出力）
+  texconf-logo.png      # ロゴ（favicon・OGP・ページ右上）
   talks/
     talk-01.md          # 講演ごとのMarkdown（IDは内容に依存しない）
   materials/

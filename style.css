@@ -122,6 +122,18 @@ a:hover {
   letter-spacing: -0.02em;
 }
 
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.site-logo {
+  width: clamp(3rem, 10vw, 4.25rem);
+  height: auto;
+  flex-shrink: 0;
+}
+
 .site-nav {
   display: flex;
   gap: 1.25rem;
@@ -138,6 +150,7 @@ a:hover {
   border-bottom: 1px solid var(--line);
 }
 
+.page-title h1,
 .hero h1 {
   margin: 0;
   font-size: clamp(2.25rem, 6.5vw, 3.75rem);
@@ -524,17 +537,33 @@ section > h2 {
   outline-offset: 3px;
 }
 
-.featured-event-header {
+.featured-event-title {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   gap: 0.75rem 1rem;
   margin-bottom: 1rem;
 }
 
-.featured-event-header h2 {
-  margin: 0;
+.featured-event-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
   font-size: clamp(1.5rem, 4vw, 2rem);
+  line-height: 1.2;
+}
+
+.featured-event-logo {
+  width: auto;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+.featured-event-heading h2 {
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
   font-weight: 700;
   letter-spacing: -0.03em;
 }

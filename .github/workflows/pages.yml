@@ -28,7 +28,7 @@ jobs:
       - name: Prepare site
         run: |
           mkdir site
-          cp index.html style.css favicon.svg .nojekyll site/
+          cp index.html style.css texconf-logo.png .nojekyll site/
           cp -r materials site/
 
       - uses: peaceiris/actions-gh-pages@v4
