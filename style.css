@@ -471,6 +471,20 @@ section > h2 {
   margin-top: 0.75rem;
 }
 
+.content-block ul {
+  margin: 1rem 0 0;
+  padding-left: 1.35rem;
+  line-height: 1.75;
+}
+
+.content-block ul + p {
+  margin-top: 1rem;
+}
+
+.party-register {
+  font-weight: 500;
+}
+
 .updates {
   margin: 0;
   padding: 0;
