@@ -209,36 +209,85 @@ function renderInline(text: string): string {
   return escaped;
 }
 
+function headingTag(level: number): string {
+  return `h${Math.min(level + 1, 6)}`;
+}
+
+function isBlank(line: string): boolean {
+  return line.trim() === "";
+}
+
+function isHeading(line: string): boolean {
+  return /^(#{1,6})\s+/.test(line);
+}
+
+function isBullet(line: string): boolean {
+  return /^\s*[-*]\s+/.test(line);
+}
+
+function isOrdered(line: string): boolean {
+  return /^\s*\d+\.\s+/.test(line);
+}
+
 function renderMarkdown(body: string): string {
   if (!body.trim()) {
     return "<p>講演概要は後日掲載します。</p>";
   }
 
-  const blocks = body.trim().split(/\n\s*\n/);
+  const lines = body.trim().split(/\n/);
   const parts: string[] = [];
+  let index = 0;
 
-  for (const block of blocks) {
-    const lines = block.split("\n");
-    if (lines.every((line) => /^[-*]\s+/.test(line))) {
-      const items = lines
-        .map((line) => `<li>${renderInline(line.slice(2).trim())}</li>`)
-        .join("");
-      parts.push(`<ul>${items}</ul>`);
+  while (index < lines.length) {
+    if (isBlank(lines[index])) {
+      index += 1;
       continue;
     }
 
-    if (lines.every((line) => /^\d+\.\s+/.test(line))) {
-      const items = lines
-        .map((line) =>
-          `<li>${renderInline(line.replace(/^\d+\.\s+/, ""))}</li>`,
-        )
-        .join("");
-      parts.push(`<ol>${items}</ol>`);
+    const headingMatch = lines[index].match(/^(#{1,6})\s+(.+)$/);
+    if (headingMatch) {
+      const tag = headingTag(headingMatch[1].length);
+      parts.push(
+        `<${tag}>${renderInline(headingMatch[2].trim())}</${tag}>`,
+      );
+      index += 1;
       continue;
     }
 
-    const paragraph = lines.map((line) => line.trim()).join(" ");
-    parts.push(`<p>${renderInline(paragraph)}</p>`);
+    if (isBullet(lines[index])) {
+      const items: string[] = [];
+      while (index < lines.length && isBullet(lines[index])) {
+        const item = lines[index].replace(/^\s*[-*]\s+/, "").trim();
+        items.push(`<li>${renderInline(item)}</li>`);
+        index += 1;
+      }
+      parts.push(`<ul>${items.join("")}</ul>`);
+      continue;
+    }
+
+    if (isOrdered(lines[index])) {
+      const items: string[] = [];
+      while (index < lines.length && isOrdered(lines[index])) {
+        const item = lines[index].replace(/^\s*\d+\.\s+/, "").trim();
+        items.push(`<li>${renderInline(item)}</li>`);
+        index += 1;
+      }
+      parts.push(`<ol>${items.join("")}</ol>`);
+      continue;
+    }
+
+    const paragraphLines: string[] = [];
+    while (
+      index < lines.length &&
+      !isBlank(lines[index]) &&
+      !isHeading(lines[index]) &&
+      !isBullet(lines[index]) &&
+      !isOrdered(lines[index])
+    ) {
+      paragraphLines.push(lines[index].trim());
+      index += 1;
+    }
+    parts.push(`<p>${renderInline(paragraphLines.join(" "))}</p>`);
   }
 
   return parts.join("\n");

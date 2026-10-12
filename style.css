@@ -398,11 +398,34 @@ section > h2 {
   border-top: 1px solid var(--line);
 }
 
+.talk-abstract h2,
+.talk-abstract h3,
+.talk-abstract h4 {
+  margin: 1.1rem 0 0.45rem;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+}
+
+.talk-abstract h2:first-child,
+.talk-abstract h3:first-child,
+.talk-abstract h4:first-child {
+  margin-top: 0;
+}
+
 .talk-abstract p {
   margin: 0.85rem 0 0;
   color: var(--muted);
   font-size: 0.95rem;
   line-height: 1.75;
+}
+
+.talk-abstract h2 + p,
+.talk-abstract h3 + p,
+.talk-abstract h4 + p {
+  margin-top: 0.35rem;
 }
 
 .talk-abstract p:first-child {
