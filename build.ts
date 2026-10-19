@@ -428,6 +428,12 @@ function applyRegistration(source: string, registration: Registration): string {
     "<!-- build:og-description:end -->",
     `  <meta property="og:description" content="${escapeHtml(metaDescription)}">`,
   );
+  updated = replaceMarkerBlock(
+    updated,
+    "<!-- build:twitter-description:start -->",
+    "<!-- build:twitter-description:end -->",
+    `  <meta name="twitter:description" content="${escapeHtml(metaDescription)}">`,
+  );
   return updated;
 }
 
