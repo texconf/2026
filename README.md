@@ -6,7 +6,7 @@
 
 ## 参加登録の状態
 
-`registration.yaml`で募集状態を管理します。Peatixと自動連携はしません。状態が変わったタイミングでこのファイルを直し、`npm run build:hub`を実行してください。
+`registration.yaml`で募集状態を管理します。Peatixと自動連携はしません。状態が変わったタイミングでこのファイルを直して`main`へpushしてください。2026サイトはCIがビルドします。入口ページの状態表示はhub側CIがこのリポジトリの`main`をcheckoutして生成し、2026のデプロイ成功後にhubのworkflow起動を試みます（権限で失敗した場合はhubのActionsからDeploy Pagesを手動実行してください）。
 
 ```yaml
 capacity: 45
@@ -64,18 +64,18 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
 ```
 
 - 入力: `index.src.html`, `talks/*.md`, `program.yaml`
-- 出力: `index.html`（ローカル確認用。公開は`pages.yml`がpush時にデプロイする）
+- 出力: `index.html`（`.gitignore`対象。`npm run build`の生成物で、リポジトリには含めない）
 
 `index.src.html`は固定部分のテンプレートです。プログラム欄はビルドで差し替わります。
 
-入口ページの講演一覧を更新するときは`npm run build:hub`を実行し、生成された`texconf.github.io/index.html`をhubリポジトリへコミットします。
+ローカルで入口ページの見え方を確認するときだけ`npm run build:hub`を使います（`TEXCONF_HUB_ROOT`未設定時は隣の`texconf.github.io`へ書き出す）。公開用の`index.html`はhubリポジトリのCIが`texconf/2026`をcheckoutして生成します。
 
 ## GitHub Pages
 
 | リポジトリ | Workflow | 内容 |
 |---|---|---|
 | 2026 | `pages.yml` | `main`へpushでビルドし`gh-pages`へデプロイ |
-| texconf.github.io | `pages.yml` | `main`へpushでGitHub Pagesへデプロイ |
+| texconf.github.io | `pages.yml` | `main`へpushで`2026`をcheckoutしてビルドしGitHub Pagesへデプロイ |
 
 ## ディレクトリ構成
 
@@ -86,7 +86,7 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
   program.yaml          # プログラム第1部と第2部、講演IDの並び
   registration.yaml     # 参加登録の状態
   index.src.html        # ページテンプレート（編集可）
-  index.html            # 生成物（build.tsの出力）
+  index.html            # 生成物（build.tsの出力・gitignore）
   texconf-logo.png      # ロゴ（favicon・OGP・ページ右上）
   talks/
     talk-01.md          # 講演ごとのMarkdown（IDは内容に依存しない）
