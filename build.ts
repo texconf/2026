@@ -1,6 +1,7 @@
 #!/usr/bin/env -S npx tsx
 /** TeXConf年次ページをMarkdownソースから生成する。 */
 
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -592,12 +593,30 @@ function applyRegistration(source: string, registration: Registration): string {
   return updated;
 }
 
+function applyStyleCssCacheBust(source: string, styleCssPath: string): string {
+  if (!existsSync(styleCssPath)) {
+    throw new Error(`スタイルシートが見つかりません: ${styleCssPath}`);
+  }
+  const content = readFileSync(styleCssPath, "utf8");
+  const version = createHash("sha256").update(content).digest("hex").slice(0, 8);
+  const href = `style.css?v=${version}`;
+  const pattern = /href="style\.css"/g;
+  const updated = source.replace(pattern, `href="${href}"`);
+  if (updated === source) {
+    throw new Error(
+      `link rel="stylesheet" href="style.css" が見つかりません（${styleCssPath}）。`,
+    );
+  }
+  return updated;
+}
+
 function buildIndex(
   src: string,
   dest: string,
   program: ProgramData,
   registration: Registration,
   options: { program: boolean; preview: boolean; registration: boolean },
+  styleCssPath: string,
 ): void {
   let source = readFileSync(src, "utf8");
   if (options.program) {
@@ -626,6 +645,7 @@ function buildIndex(
       renderEventStatus(registration),
     );
   }
+  source = applyStyleCssCacheBust(source, styleCssPath);
   writeFileSync(dest, source, "utf8");
 }
 
@@ -635,11 +655,18 @@ function main(): void {
   validateProgram(program);
   const registration = loadRegistration();
 
-  buildIndex(INDEX_SRC, INDEX_OUT, program, registration, {
-    program: true,
-    preview: false,
-    registration: true,
-  });
+  buildIndex(
+    INDEX_SRC,
+    INDEX_OUT,
+    program,
+    registration,
+    {
+      program: true,
+      preview: false,
+      registration: true,
+    },
+    join(ROOT, "style.css"),
+  );
   console.log(`生成: ${INDEX_OUT}`);
 
   if (hub) {
@@ -648,11 +675,18 @@ function main(): void {
         `警告: ${HUB_INDEX_SRC} がありません。入口ページは更新しません。`,
       );
     } else {
-      buildIndex(HUB_INDEX_SRC, HUB_INDEX_OUT, program, registration, {
-        program: false,
-        preview: true,
-        registration: false,
-      });
+      buildIndex(
+        HUB_INDEX_SRC,
+        HUB_INDEX_OUT,
+        program,
+        registration,
+        {
+          program: false,
+          preview: true,
+          registration: false,
+        },
+        join(HUB_ROOT, "style.css"),
+      );
       console.log(`生成: ${HUB_INDEX_OUT}`);
     }
   }
