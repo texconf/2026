@@ -1,14 +1,35 @@
+flow:
+  - label: 開場
+    time: "13:10"
+  - label: オープニング
+    time: "13:30"
+  - part: part1
+  - label: 大休憩
+    time: "15:35-16:05"
+  - part: part2
+  - label: クロージング
+    time: "17:10-17:30"
+  - label: 懇親会
+    time: "18:00-"
+
 parts:
   - id: part1
     heading: プログラム第1部
-    meta: TeX/LaTeXのモダンな基礎を知ろう（チュートリアル、各40分程度）
+    meta: TeX/LaTeXのモダンな基礎を知ろう（チュートリアル）
+    time: "13:40-15:35"
     talks:
-      - talk-01
-      - talk-02
-      - talk-03
+      - id: talk-01
+        time: "13:40-14:15"
+      - id: talk-02
+        time: "14:20-14:55"
+      - id: talk-03
+        time: "15:00-15:35"
   - id: part2
     heading: プログラム第2部
-    meta: TeXをもっと極めよう（研究発表、各20〜30分）
+    meta: TeXをもっと極めよう（研究発表）
+    time: "16:05-17:10"
     talks:
-      - talk-04
-      - talk-05
+      - id: talk-04
+        time: "16:05-16:35"
+      - id: talk-05
+        time: "16:40-17:10"

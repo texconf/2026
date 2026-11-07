@@ -290,9 +290,37 @@ section > h2 {
   line-height: 1.85;
 }
 
+.content-block + .track-section,
 .track-section + .track-section,
 .track-section + .content-block {
   margin-top: 3.5rem;
+}
+
+.program-marker {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 0 1rem;
+  align-items: baseline;
+  margin: 0;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.95rem;
+}
+
+.program-marker-time {
+  font-weight: 600;
+}
+
+.program-marker + .track-section,
+.track-section + .program-marker {
+  margin-top: 1.25rem;
+}
+
+.track-time {
+  margin: 0.35rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .track-header {
@@ -337,10 +365,17 @@ section > h2 {
   box-shadow: var(--shadow);
 }
 
+.talk-time {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
 .talk-summary {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.75rem 1.5rem;
+  grid-template-columns: 6.25rem minmax(0, 1fr) auto;
+  gap: 0.75rem 1.25rem;
   align-items: baseline;
   padding: 1.1rem 1.25rem;
   cursor: pointer;
@@ -718,12 +753,17 @@ section > h2 {
 }
 
 @media (max-width: 40rem) {
+  .program-marker {
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+  }
+
   .talk-summary {
-    grid-template-columns: 1fr;
-    gap: 0.25rem;
+    grid-template-columns: 5.25rem minmax(0, 1fr);
+    gap: 0.25rem 0.75rem;
   }
 
   .talk-speaker {
+    grid-column: 1 / -1;
     white-space: normal;
   }
 

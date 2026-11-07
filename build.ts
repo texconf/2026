@@ -26,11 +26,35 @@ const MARKER_PROGRAM_END = "<!-- build:program:end -->";
 const MARKER_PREVIEW_START = "<!-- build:talk-preview:start -->";
 const MARKER_PREVIEW_END = "<!-- build:talk-preview:end -->";
 
+interface TalkSlot {
+  id: string;
+  time: string;
+}
+
 interface ProgramPart {
   id: string;
   heading: string;
   meta: string;
-  talks: string[];
+  time: string;
+  talks: TalkSlot[];
+}
+
+type ProgramFlowMarker = {
+  kind: "marker";
+  label: string;
+  time: string;
+};
+
+type ProgramFlowPart = {
+  kind: "part";
+  partId: string;
+};
+
+type ProgramFlowItem = ProgramFlowMarker | ProgramFlowPart;
+
+interface ProgramData {
+  flow: ProgramFlowItem[];
+  parts: ProgramPart[];
 }
 
 interface Talk {
@@ -166,14 +190,127 @@ function renderEventStatus(registration: Registration): string {
   return `<span class="event-status${modifier}">${escapeHtml(label)}</span>`;
 }
 
-function loadProgram(): ProgramPart[] {
-  const data = parseYaml(readFileSync(PROGRAM_FILE, "utf8")) as {
-    parts?: ProgramPart[];
-  };
-  if (!data?.parts) {
+function parseTalkSlots(raw: unknown, partId: string): TalkSlot[] {
+  if (!Array.isArray(raw) || raw.length === 0) {
+    throw new Error(`${PROGRAM_FILE}のparts（${partId}）にtalksが必要です。`);
+  }
+  return raw.map((entry, index) => {
+    if (typeof entry === "string") {
+      throw new Error(
+        `${PROGRAM_FILE}のparts（${partId}）talks[${index}]はidとtimeを持つオブジェクトにしてください。`,
+      );
+    }
+    if (!entry || typeof entry !== "object") {
+      throw new Error(
+        `${PROGRAM_FILE}のparts（${partId}）talks[${index}]が不正です。`,
+      );
+    }
+    const slot = entry as { id?: string; time?: string };
+    const id = (slot.id ?? "").trim();
+    const time = (slot.time ?? "").trim();
+    if (!id || !time) {
+      throw new Error(
+        `${PROGRAM_FILE}のparts（${partId}）talks[${index}]にidとtimeが必要です。`,
+      );
+    }
+    return { id, time };
+  });
+}
+
+function parseProgramParts(raw: unknown): ProgramPart[] {
+  if (!Array.isArray(raw) || raw.length === 0) {
     throw new Error(`${PROGRAM_FILE}にpartsが必要です。`);
   }
-  return data.parts;
+  return raw.map((entry) => {
+    if (!entry || typeof entry !== "object") {
+      throw new Error(`${PROGRAM_FILE}のpartsに不正な項目があります。`);
+    }
+    const part = entry as ProgramPart;
+    const id = (part.id ?? "").trim();
+    const heading = (part.heading ?? "").trim();
+    const meta = (part.meta ?? "").trim();
+    const time = (part.time ?? "").trim();
+    if (!id || !heading || !meta || !time) {
+      throw new Error(
+        `${PROGRAM_FILE}のpart（${id || "（idなし）"}）にid、heading、meta、timeが必要です。`,
+      );
+    }
+    return {
+      id,
+      heading,
+      meta,
+      time,
+      talks: parseTalkSlots(part.talks, id),
+    };
+  });
+}
+
+function parseProgramFlow(raw: unknown): ProgramFlowItem[] {
+  if (!Array.isArray(raw) || raw.length === 0) {
+    throw new Error(`${PROGRAM_FILE}にflowが必要です。`);
+  }
+  return raw.map((entry, index) => {
+    if (!entry || typeof entry !== "object") {
+      throw new Error(`${PROGRAM_FILE}のflow[${index}]が不正です。`);
+    }
+    const row = entry as { part?: string; label?: string; time?: string };
+    const partId = (row.part ?? "").trim();
+    if (partId) {
+      if (row.label || row.time) {
+        throw new Error(
+          `${PROGRAM_FILE}のflow[${index}]はpartかlabel+timeのどちらか一方にしてください。`,
+        );
+      }
+      return { kind: "part", partId } satisfies ProgramFlowPart;
+    }
+    const label = (row.label ?? "").trim();
+    const time = (row.time ?? "").trim();
+    if (!label || !time) {
+      throw new Error(
+        `${PROGRAM_FILE}のflow[${index}]にlabelとtime、またはpartが必要です。`,
+      );
+    }
+    return { kind: "marker", label, time } satisfies ProgramFlowMarker;
+  });
+}
+
+function loadProgramData(): ProgramData {
+  const data = parseYaml(readFileSync(PROGRAM_FILE, "utf8")) as {
+    flow?: unknown;
+    parts?: unknown;
+  };
+  const parts = parseProgramParts(data.parts);
+  const flow = parseProgramFlow(data.flow);
+  return { flow, parts };
+}
+
+function validateProgram(program: ProgramData): void {
+  const partById = new Map(program.parts.map((part) => [part.id, part]));
+  const partsInFlow = new Set<string>();
+
+  for (const item of program.flow) {
+    if (item.kind === "part") {
+      if (!partById.has(item.partId)) {
+        throw new Error(
+          `${PROGRAM_FILE}のflowに未知のpartがあります: ${item.partId}`,
+        );
+      }
+      if (partsInFlow.has(item.partId)) {
+        throw new Error(
+          `${PROGRAM_FILE}のflowでpart ${item.partId} が重複しています。`,
+        );
+      }
+      partsInFlow.add(item.partId);
+    }
+  }
+
+  for (const part of program.parts) {
+    if (!partsInFlow.has(part.id)) {
+      throw new Error(
+        `${PROGRAM_FILE}のflowにpart ${part.id} がありません。`,
+      );
+    }
+  }
 }
 
 function parseFrontmatter(text: string): [Record<string, string>, string] {
@@ -325,7 +462,7 @@ function loadTalk(talkId: string): Talk {
   };
 }
 
-function renderTalkItem(talk: Talk): string {
+function renderTalkItem(talk: Talk, time: string): string {
   const materials = talk.materialsHref
     ? `\n                <p class="talk-materials"><a href="${escapeHtml(talk.materialsHref)}">発表資料</a></p>`
     : "";
@@ -334,6 +471,7 @@ function renderTalkItem(talk: Talk): string {
             <!-- talk: ${escapeHtml(talk.talkId)} -->
             <details class="talk">
               <summary class="talk-summary">
+                <span class="talk-time">${escapeHtml(time)}</span>
                 <span class="talk-title">${escapeHtml(talk.title)}</span>
                 <span class="talk-speaker">${escapeHtml(talk.speaker)}</span>
               </summary>
@@ -344,20 +482,37 @@ function renderTalkItem(talk: Talk): string {
           </li>`;
 }
 
-function renderProgram(parts: ProgramPart[]): string {
-  return parts
-    .map((part) => {
-      const talks = part.talks.map((talkId) => loadTalk(talkId));
-      const items = talks.map(renderTalkItem).join("\n");
-      return `    <section class="track-section" aria-labelledby="${escapeHtml(part.id)}-heading">
+function renderProgramMarker(item: ProgramFlowMarker): string {
+  return `    <p class="program-marker">
+      <span class="program-marker-time">${escapeHtml(item.time)}</span>
+      <span class="program-marker-label">${escapeHtml(item.label)}</span>
+    </p>`;
+}
+
+function renderProgramPart(part: ProgramPart): string {
+  const items = part.talks
+    .map((slot) => renderTalkItem(loadTalk(slot.id), slot.time))
+    .join("\n");
+  return `    <section class="track-section" aria-labelledby="${escapeHtml(part.id)}-heading">
       <div class="track-header">
         <h2 id="${escapeHtml(part.id)}-heading">${escapeHtml(part.heading)}</h2>
+        <p class="track-time">${escapeHtml(part.time)}</p>
         <p class="track-meta">${escapeHtml(part.meta)}</p>
       </div>
       <ul class="talk-list">
 ${items}
         </ul>
     </section>`;
+}
+
+function renderProgram(program: ProgramData): string {
+  const partById = new Map(program.parts.map((part) => [part.id, part]));
+  return program.flow
+    .map((item) => {
+      if (item.kind === "marker") {
+        return renderProgramMarker(item);
+      }
+      return renderProgramPart(partById.get(item.partId)!);
     })
     .join("\n\n");
 }
@@ -365,8 +520,8 @@ ${items}
 function renderTalkPreview(parts: ProgramPart[]): string {
   const rows: string[] = [];
   for (const part of parts) {
-    for (const talkId of part.talks) {
-      const talk = loadTalk(talkId);
+    for (const slot of part.talks) {
+      const talk = loadTalk(slot.id);
       rows.push(
         `          <li>\n            <span class="talk-title">${escapeHtml(talk.title)}</span>\n            <span class="talk-speaker">${escapeHtml(talk.speaker)}</span>\n          </li>`,
       );
@@ -440,7 +595,7 @@ function applyRegistration(source: string, registration: Registration): string {
 function buildIndex(
   src: string,
   dest: string,
-  parts: ProgramPart[],
+  program: ProgramData,
   registration: Registration,
   options: { program: boolean; preview: boolean; registration: boolean },
 ): void {
@@ -450,7 +605,7 @@ function buildIndex(
       source,
       MARKER_PROGRAM_START,
       MARKER_PROGRAM_END,
-      renderProgram(parts),
+      renderProgram(program),
     );
   }
   if (options.preview) {
@@ -458,7 +613,7 @@ function buildIndex(
       source,
       MARKER_PREVIEW_START,
       MARKER_PREVIEW_END,
-      renderTalkPreview(parts),
+      renderTalkPreview(program.parts),
     );
   }
   if (options.registration) {
@@ -476,10 +631,11 @@ function buildIndex(
 
 function main(): void {
   const hub = process.argv.includes("--hub");
-  const parts = loadProgram();
+  const program = loadProgramData();
+  validateProgram(program);
   const registration = loadRegistration();
 
-  buildIndex(INDEX_SRC, INDEX_OUT, parts, registration, {
+  buildIndex(INDEX_SRC, INDEX_OUT, program, registration, {
     program: true,
     preview: false,
     registration: true,
@@ -492,7 +648,7 @@ function main(): void {
         `警告: ${HUB_INDEX_SRC} がありません。入口ページは更新しません。`,
       );
     } else {
-      buildIndex(HUB_INDEX_SRC, HUB_INDEX_OUT, parts, registration, {
+      buildIndex(HUB_INDEX_SRC, HUB_INDEX_OUT, program, registration, {
         program: false,
         preview: true,
         registration: false,

@@ -75,7 +75,7 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
 | リポジトリ | Workflow | 内容 |
 |---|---|---|
 | 2026 | `pages.yml` | `main`へpushでビルドし`gh-pages`へデプロイ |
-| texconf.github.io | `pages.yml` | `main`へpushで`2026`をcheckoutしてビルドしGitHub Pagesへデプロイ |
+| texconf.github.io | `pages.yml` | `main`へpushで`2026`をcheckoutしてビルドし`gh-pages`へデプロイ（Pages公開元は`gh-pages`ブランチ） |
 
 ## ディレクトリ構成
 
@@ -83,7 +83,7 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
 2026/
   build.ts
   package.json
-  program.yaml          # プログラム第1部と第2部、講演IDの並び
+  program.yaml          # 演目の時刻・流れ（flow）、第1部・第2部と講演ID
   registration.yaml     # 参加登録の状態
   index.src.html        # ページテンプレート（編集可）
   index.html            # 生成物（build.tsの出力・gitignore）
