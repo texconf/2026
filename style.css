@@ -292,7 +292,8 @@ section > h2 {
 
 .content-block + .track-section,
 .track-section + .track-section,
-.track-section + .content-block {
+.track-section + .content-block,
+.program-marker + .content-block {
   margin-top: 3.5rem;
 }
 
