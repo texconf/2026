@@ -180,15 +180,21 @@ function renderRegistration(registration: Registration): string {
       </aside>`;
 }
 
+function eventStatusModifier(status: RegistrationStatus): string {
+  if (status === "sold_out" || status === "closed") {
+    return "event-status-closed";
+  }
+  if (status === "nearly_full") {
+    return "event-status-limited";
+  }
+  return "";
+}
+
 function renderEventStatus(registration: Registration): string {
   const label = EVENT_STATUS_LABELS[registration.status];
-  const modifier =
-    registration.status === "sold_out" || registration.status === "closed"
-      ? " event-status-closed"
-      : registration.status === "nearly_full"
-        ? " event-status-limited"
-        : "";
-  return `<span class="event-status${modifier}">${escapeHtml(label)}</span>`;
+  const modifier = eventStatusModifier(registration.status);
+  const modifierClass = modifier ? ` ${modifier}` : "";
+  return `<span class="event-status${modifierClass}">${escapeHtml(label)}</span>`;
 }
 
 function parseTalkSlots(raw: unknown, partId: string): TalkSlot[] {
@@ -518,17 +524,42 @@ function renderProgram(program: ProgramData): string {
     .join("\n\n");
 }
 
-function renderTalkPreview(parts: ProgramPart[]): string {
-  const rows: string[] = [];
+function collectHubSyncTalks(
+  parts: ProgramPart[],
+): { title: string; speaker: string }[] {
+  const talks: { title: string; speaker: string }[] = [];
   for (const part of parts) {
     for (const slot of part.talks) {
       const talk = loadTalk(slot.id);
-      rows.push(
-        `          <li>\n            <span class="talk-title">${escapeHtml(talk.title)}</span>\n            <span class="talk-speaker">${escapeHtml(talk.speaker)}</span>\n          </li>`,
-      );
+      talks.push({ title: talk.title, speaker: talk.speaker });
     }
   }
+  return talks;
+}
+
+function renderTalkPreview(parts: ProgramPart[]): string {
+  const rows: string[] = [];
+  for (const talk of collectHubSyncTalks(parts)) {
+    rows.push(
+      `          <li>\n            <span class="talk-title">${escapeHtml(talk.title)}</span>\n            <span class="talk-speaker">${escapeHtml(talk.speaker)}</span>\n          </li>`,
+    );
+  }
   return rows.join("\n");
+}
+
+function writeHubSyncJson(
+  program: ProgramData,
+  registration: Registration,
+): void {
+  const path = join(ROOT, "hub-sync.json");
+  const payload = {
+    status: registration.status,
+    label: EVENT_STATUS_LABELS[registration.status],
+    modifier: eventStatusModifier(registration.status),
+    talks: collectHubSyncTalks(program.parts),
+  };
+  writeFileSync(path, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  console.log(`生成: ${path}`);
 }
 
 function replaceMarkerBlock(
@@ -668,6 +699,7 @@ function main(): void {
     join(ROOT, "style.css"),
   );
   console.log(`生成: ${INDEX_OUT}`);
+  writeHubSyncJson(program, registration);
 
   if (hub) {
     if (!existsSync(HUB_INDEX_SRC)) {
