@@ -159,6 +159,16 @@ a:hover {
   letter-spacing: -0.04em;
 }
 
+.page-title .doc-title {
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.page-title .doc-title span {
+  display: inline-block;
+}
+
 .hero-lede {
   margin: 0.85rem 0 0;
   max-width: 38em;
