@@ -159,6 +159,16 @@ a:hover {
   letter-spacing: -0.04em;
 }
 
+.page-title .doc-title {
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.page-title .doc-title span {
+  display: inline-block;
+}
+
 .hero-lede {
   margin: 0.85rem 0 0;
   max-width: 38em;
@@ -538,6 +548,19 @@ section > h2 {
 
 .content-block ul + p {
   margin-top: 1rem;
+}
+
+.content-block h3 {
+  margin: 1.75rem 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+}
+
+.content-block h3 + ul,
+.content-block p + ul {
+  margin-top: 0.5rem;
 }
 
 .party-register {
