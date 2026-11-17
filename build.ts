@@ -17,6 +17,8 @@ const PROGRAM_FILE = join(ROOT, "program.yaml");
 const REGISTRATION_FILE = join(ROOT, "registration.yaml");
 const INDEX_SRC = join(ROOT, "index.src.html");
 const INDEX_OUT = join(ROOT, "index.html");
+const AHP_SRC = join(ROOT, "ahp.src.html");
+const AHP_OUT = join(ROOT, "ahp.html");
 const HUB_INDEX_SRC = join(HUB_ROOT, "index.src.html");
 const HUB_INDEX_OUT = join(HUB_ROOT, "index.html");
 
@@ -680,6 +682,12 @@ function buildIndex(
   writeFileSync(dest, source, "utf8");
 }
 
+/** 差し込みのない固定ページに、style.cssのキャッシュ対策だけを施して書き出す。 */
+function buildStaticPage(src: string, dest: string, styleCssPath: string): void {
+  const source = applyStyleCssCacheBust(readFileSync(src, "utf8"), styleCssPath);
+  writeFileSync(dest, source, "utf8");
+}
+
 function main(): void {
   const hub = process.argv.includes("--hub");
   const program = loadProgramData();
@@ -699,6 +707,8 @@ function main(): void {
     join(ROOT, "style.css"),
   );
   console.log(`生成: ${INDEX_OUT}`);
+  buildStaticPage(AHP_SRC, AHP_OUT, join(ROOT, "style.css"));
+  console.log(`生成: ${AHP_OUT}`);
   writeHubSyncJson(program, registration);
 
   if (hub) {

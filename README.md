@@ -63,10 +63,10 @@ npm run build                     # 2026年ページを生成
 npm run build:hub                 # 上に加え入口ページの講演一覧も更新
 ```
 
-- 入力: `index.src.html`, `talks/*.md`, `program.yaml`
-- 出力: `index.html`, `hub-sync.json`（いずれも`.gitignore`対象。`npm run build`の生成物で、リポジトリには含めない）
+- 入力: `index.src.html`, `ahp.src.html`, `talks/*.md`, `program.yaml`
+- 出力: `index.html`, `ahp.html`, `hub-sync.json`（いずれも`.gitignore`対象。`npm run build`の生成物で、リポジトリには含めない）
 
-`index.src.html`は固定部分のテンプレートです。プログラム欄はビルドで差し替わります。
+`index.src.html`は固定部分のテンプレートです。プログラム欄はビルドで差し替わります。`ahp.src.html`はアンチハラスメントポリシーのページで、差し込みはなく、`style.css`のキャッシュ対策だけが施されます。
 
 ローカルで入口ページの見え方を確認するときだけ`npm run build:hub`を使います（`TEXCONF_HUB_ROOT`未設定時は隣の`texconf.github.io`へ書き出す）。公開用の`index.html`はhubリポジトリのCIが`texconf/2026`をcheckoutして生成します。
 
@@ -87,6 +87,8 @@ npm run build:hub                 # 上に加え入口ページの講演一覧�
   registration.yaml     # 参加登録の状態
   index.src.html        # ページテンプレート（編集可）
   index.html            # 生成物（build.tsの出力・gitignore）
+  ahp.src.html          # アンチハラスメントポリシー（編集可）
+  ahp.html              # 生成物（build.tsの出力・gitignore）
   texconf-logo.png      # ロゴ（favicon・OGP・ページ右上）
   talks/
     talk-01.md          # 講演ごとのMarkdown（IDは内容に依存しない）
