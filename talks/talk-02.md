@@ -1,6 +1,7 @@
 ---
 title: LuaTeX-ja（再）入門
 speaker: 北川弘典
+slides: https://github.com/h-kitagawa/presentations/blob/main/tc26ltja.pdf
 ---
 
 ## 概要

@@ -393,6 +393,10 @@ section > h2 {
   list-style: none;
 }
 
+.talk-summary:has(.talk-slides) {
+  grid-template-columns: 6.25rem minmax(0, 1fr) auto auto;
+}
+
 .talk-summary::-webkit-details-marker {
   display: none;
 }
@@ -437,6 +441,25 @@ section > h2 {
   color: var(--muted);
   font-size: 0.95rem;
   white-space: nowrap;
+}
+
+.talk-slides {
+  align-self: center;
+  padding: 0.15rem 0.7rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.5;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.talk-slides:hover {
+  background: var(--accent);
+  color: #fff;
 }
 
 .talk-abstract {
@@ -789,6 +812,16 @@ section > h2 {
   .talk-speaker {
     grid-column: 1 / -1;
     white-space: normal;
+  }
+
+  .talk-summary:has(.talk-slides) .talk-speaker {
+    grid-row: 2;
+  }
+
+  .talk-summary:has(.talk-slides) .talk-slides {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    justify-self: start;
   }
 
   .featured-event .talk-preview li {

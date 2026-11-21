@@ -66,6 +66,7 @@ interface Talk {
   speaker: string;
   abstractHtml: string;
   materialsHref: string | null;
+  slidesHref: string | null;
 }
 
 type RegistrationStatus = "open" | "nearly_full" | "sold_out" | "closed";
@@ -439,6 +440,28 @@ function renderMarkdown(body: string): string {
   return parts.join("\n");
 }
 
+function parseSlidesUrl(talkPath: string, raw: string | undefined): string | null {
+  const value = (raw ?? "").trim();
+  if (!value) {
+    return null;
+  }
+
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new Error(
+      `${talkPath}のslidesはhttpまたはhttpsのURLである必要があります: ${value}`,
+    );
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    throw new Error(
+      `${talkPath}のslidesはhttpまたはhttpsのURLである必要があります: ${value}`,
+    );
+  }
+  return value;
+}
+
 function findMaterials(talkId: string): string | null {
   for (const ext of MATERIAL_EXTENSIONS) {
     const candidate = join(MATERIALS_DIR, `${talkId}${ext}`);
@@ -468,12 +491,16 @@ function loadTalk(talkId: string): Talk {
     speaker,
     abstractHtml: renderMarkdown(body),
     materialsHref: findMaterials(talkId),
+    slidesHref: parseSlidesUrl(mdPath, meta.slides),
   };
 }
 
 function renderTalkItem(talk: Talk, time: string): string {
   const materials = talk.materialsHref
     ? `\n                <p class="talk-materials"><a href="${escapeHtml(talk.materialsHref)}">発表資料</a></p>`
+    : "";
+  const slides = talk.slidesHref
+    ? `\n                <a class="talk-slides" href="${escapeHtml(talk.slidesHref)}" aria-label="${escapeHtml(talk.title)}の発表資料">発表資料</a>`
     : "";
 
   return `          <li>
@@ -482,7 +509,7 @@ function renderTalkItem(talk: Talk, time: string): string {
               <summary class="talk-summary">
                 <span class="talk-time">${escapeHtml(time)}</span>
                 <span class="talk-title">${escapeHtml(talk.title)}</span>
-                <span class="talk-speaker">${escapeHtml(talk.speaker)}</span>
+                <span class="talk-speaker">${escapeHtml(talk.speaker)}</span>${slides}
               </summary>
               <div class="talk-abstract">
                 ${talk.abstractHtml}${materials}

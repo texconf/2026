@@ -47,7 +47,21 @@ speaker: 北川弘典
 
 front matterの`title`が講演タイトル、`speaker`が登壇者名です。`---`の下が講演概要です。
 
-### 2. 発表資料を置く（任意）
+### 2. 発表資料へのリンクを付ける（任意）
+
+発表資料のファイルはこのリポジトリには置きません。front matterの`slides`に外部URLを書くと、プログラムの各講演に「発表資料」リンクが付きます。
+
+```markdown
+---
+title: LuaTeX-ja（再）入門
+speaker: 北川弘典
+slides: https://example.com/slides
+---
+```
+
+`http`と`https`だけを受け付けます。`slides`がない講演にはリンクを出しません。
+
+### 3. 発表資料を置く（任意）
 
 `materials/`に`<講演ID>.<拡張子>`という名前でファイルを置くと、概要欄に「発表資料」リンクが自動で付きます。
 
@@ -55,7 +69,7 @@ front matterの`title`が講演タイトル、`speaker`が登壇者名です。`
 
 例: `materials/talk-02.pdf` → リンク先 `materials/talk-02.pdf`
 
-### 3. ビルド
+### 4. ビルド
 
 ```bash
 npm install                       # 初回のみ

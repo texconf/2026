@@ -188,6 +188,15 @@
     </section>
   </main>
 
+  <script>
+    document.addEventListener("click", (event) => {
+      const target = event.target;
+      if (target instanceof Element && target.closest(".talk-slides")) {
+        event.stopPropagation();
+      }
+    });
+  </script>
+
   <footer class="site-footer">
     <div class="wrap site-footer-inner">
       <p>主催：TeXConf実行委員会</p>
