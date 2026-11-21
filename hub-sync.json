@@ -1,0 +1,27 @@
+{
+  "status": "sold_out",
+  "label": "満席",
+  "modifier": "event-status-closed",
+  "talks": [
+    {
+      "title": "TeX Live（再）入門",
+      "speaker": "山本宗宏（株式会社Green Cherry）"
+    },
+    {
+      "title": "LuaTeX-ja（再）入門",
+      "speaker": "北川弘典"
+    },
+    {
+      "title": "TikZ/tcolorbox（再）入門",
+      "speaker": "寺田侑祐（鉄緑会）、渡邉倖成（鉄緑会）"
+    },
+    {
+      "title": "TeX処理系をワークフローに組み込む試み",
+      "speaker": "高橋克典"
+    },
+    {
+      "title": "リアルタイムTeXプレビュー",
+      "speaker": "川口晃世（株式会社Fermion）"
+    }
+  ]
+}
