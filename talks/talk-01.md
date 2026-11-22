@@ -1,6 +1,7 @@
 ---
 title: TeX Live（再）入門
 speaker: 山本宗宏（株式会社Green Cherry）
+slides: https://gist.github.com/munepi/290e31b1a71eaff31f4293666081b45a
 ---
 
 ## 概要
