@@ -22,6 +22,7 @@ peatix_url: https://texconf2026.peatix.com/
 | `nearly_full` | 残りわずか | Peatix申し込み案内（残りわずか） |
 | `sold_out` | 満席 | 募集終了（満席） |
 | `closed` | 募集終了 | 募集終了 |
+| `held` | 開催終了 | 開催終了（バナー） |
 
 ## 講演内容の更新
 

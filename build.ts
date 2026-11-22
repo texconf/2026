@@ -69,7 +69,12 @@ interface Talk {
   slidesHref: string | null;
 }
 
-type RegistrationStatus = "open" | "nearly_full" | "sold_out" | "closed";
+type RegistrationStatus =
+  | "open"
+  | "nearly_full"
+  | "sold_out"
+  | "closed"
+  | "held";
 
 interface Registration {
   capacity: number;
@@ -82,6 +87,7 @@ const REGISTRATION_STATUSES: RegistrationStatus[] = [
   "nearly_full",
   "sold_out",
   "closed",
+  "held",
 ];
 
 const EVENT_STATUS_LABELS: Record<RegistrationStatus, string> = {
@@ -89,6 +95,7 @@ const EVENT_STATUS_LABELS: Record<RegistrationStatus, string> = {
   nearly_full: "残りわずか",
   sold_out: "満席",
   closed: "募集終了",
+  held: "開催終了",
 };
 
 function escapeHtml(text: string): string {
@@ -156,26 +163,34 @@ function registrationMetaDescription(registration: Registration): string {
       return `${venue}${capacity}満席のため募集を終了しました。`;
     case "closed":
       return `${venue}${capacity}募集を終了しました。`;
+    case "held":
+      return `TeXConf 2026は2026年11月21日（土）13:30〜17:30、ちよだプラットフォームスクウェアで開催しました。定員${registration.capacity}名。`;
   }
 }
 
 function renderRegistration(registration: Registration): string {
   const sub = registrationCapacityText(registration);
-  const closed = registration.status === "sold_out" || registration.status === "closed";
+  const closed =
+    registration.status === "sold_out" ||
+    registration.status === "closed" ||
+    registration.status === "held";
   const bannerClass = closed ? "reg-banner reg-banner-closed" : "reg-banner";
   const peatixLink = `<a href="${escapeHtml(registration.peatixUrl)}">Peatix</a>`;
+  const label = registration.status === "held" ? "開催" : "参加登録";
 
   let main: string;
   if (registration.status === "open" || registration.status === "nearly_full") {
     main = `${peatixLink}でお申し込みください（学生の方もPeatixでの登録が必要です）`;
   } else if (registration.status === "sold_out") {
     main = "定員に達したため、募集を終了しました";
+  } else if (registration.status === "held") {
+    main = "TeXConf 2026は終了しました";
   } else {
     main = "募集を終了しました";
   }
 
   return `      <aside class="${bannerClass}" aria-labelledby="reg-banner-heading">
-        <span class="reg-banner-label">参加登録</span>
+        <span class="reg-banner-label">${escapeHtml(label)}</span>
         <div>
           <p class="reg-banner-main" id="reg-banner-heading">${main}</p>
           <p class="reg-banner-sub">${escapeHtml(sub)}</p>
@@ -184,7 +199,7 @@ function renderRegistration(registration: Registration): string {
 }
 
 function eventStatusModifier(status: RegistrationStatus): string {
-  if (status === "sold_out" || status === "closed") {
+  if (status === "sold_out" || status === "closed" || status === "held") {
     return "event-status-closed";
   }
   if (status === "nearly_full") {
