@@ -1,6 +1,7 @@
 ---
 title: リアルタイムTeXプレビュー
 speaker: 川口晃世（株式会社Fermion）
+slides: https://github.com/KKTeX/TeXConf2026-talk
 ---
 
 ## 概要
